@@ -70,5 +70,39 @@ router.post('/', (req, res) => {
     res.status(201).json(hotels)
 })
 
+router.put('/:id', (req, res) => {
+    const id = req.params.id;
+    const index = hotels.findIndex((hotel) => hotel._id === id)
+    if(index !== -1){
+        hotels[index] = {...hotels[index], ...req.body};
+        res.status(200).json(hotels[index])
+    } else {
+        res.status(404).json({message: 'Hotel not found'})
+    }
+})
+
+
+router.patch('/:id', (req, res) => {
+    const id = req.params.id;
+    const index = hotels.findIndex((hotel) => hotel._id === id)
+    if(index !== -1){
+        hotels[index] = {...hotels[index], ...req.body};
+        res.status(200).json(hotels[index])
+    } else {
+        res.status(404).json({message: 'Hotel not found'})
+    }
+})
+
+
+router.delete('/:id', (req, res) => {
+    const id = req.params.id;
+    const index = hotels.findIndex((hotel) => hotel._id === id)
+    if(index !== -1){
+        hotels.splice(index, 1);
+        res.status(200).json({message: 'Hotel deleted successfully'})
+    } else {
+        res.status(404).json({message: 'Hotel not found'})
+    }
+})
 
 module.exports = router;
