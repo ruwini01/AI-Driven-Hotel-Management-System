@@ -1,0 +1,51 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://marketplace.visualstudio.com/items?itemName=pomdtr.excalidraw-editor",
+  "elements": [
+    {
+      "id": "LLEmFHJat5aA2iRx0CIp9",
+      "type": "text",
+      "x": 121.02422561309277,
+      "y": -303.17019996856766,
+      "width": 744.5590209960938,
+      "height": 108,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "index": "a0",
+      "roundness": null,
+      "seed": 818079423,
+      "version": 177,
+      "versionNonce": 127517983,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1759051440742,
+      "link": null,
+      "locked": false,
+      "text": "api => RESTful contracts that we expose\napplication => Core business logic relevant to the domain entities or the resources \ndomain =>  \ninfrastructure =>",
+      "fontSize": 20,
+      "fontFamily": 6,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "containerId": null,
+      "originalText": "api => RESTful contracts that we expose\napplication => Core business logic relevant to the domain entities or the resources \ndomain =>  \ninfrastructure =>",
+      "autoResize": true,
+      "lineHeight": 1.35
+    }
+  ],
+  "appState": {
+    "gridSize": 20,
+    "gridStep": 5,
+    "gridModeEnabled": false,
+    "viewBackgroundColor": "#ffffff"
+  },
+  "files": {}
+}
