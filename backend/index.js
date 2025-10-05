@@ -16,5 +16,7 @@ app.listen(PORT, () => {
 
 
 const hotelRoute = require('./src/api/hotel');
+const reviewRoute = require("./src/api/review");
 
 app.use('/api/hotels', hotelRoute);
+app.use("/api/reviews", reviewRoute);
