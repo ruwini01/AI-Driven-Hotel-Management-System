@@ -1,4 +1,8 @@
 const express = require('express');
+const connectDB = require('./src/infrastructure/db');
+
+//Connect to database
+connectDB();
 
 const app = express();
 const PORT =  8000;
