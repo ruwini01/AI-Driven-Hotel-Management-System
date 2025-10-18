@@ -1,16 +1,18 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-// Dynamic base URL - works for both development and production
+// Dynamic base URL
 const getBaseUrl = () => {
-  // In production (Vercel), use relative URL since frontend and backend are on same domain
-  if (import.meta.env.PROD) {
-    return "/api/";
+  // Will use backend URL from environment variable (we'll set this later)
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  
+  if (backendUrl) {
+    return backendUrl;
   }
-  // In development, use localhost backend
-  return import.meta.env.VITE_API_URL || "http://localhost:8000/api/";
+  
+  // For now, use localhost backend during development
+  return "http://localhost:8000/api/";
 };
 
-// Define a service using a base URL and expected endpoints
 export const api = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
@@ -33,7 +35,7 @@ export const api = createApi({
       });
     },
   }),
-  tagTypes: ['Hotels', 'Locations'], // Add cache tags for better cache management
+  tagTypes: ['Hotels', 'Locations'],
   endpoints: (build) => ({
     getAllHotels: build.query({
       query: () => "hotels",
@@ -51,7 +53,7 @@ export const api = createApi({
           name: location.name,
         },
       }),
-      invalidatesTags: ['Locations'], // Refresh locations after adding
+      invalidatesTags: ['Locations'],
     }),
     getAllLocations: build.query({
       query: () => "locations",
@@ -60,8 +62,6 @@ export const api = createApi({
   }),
 });
 
-// Export hooks for usage in functional components, which are
-// auto-generated based on the defined endpoints
 export const {
   useGetAllHotelsQuery,
   useGetHotelByIdQuery,
