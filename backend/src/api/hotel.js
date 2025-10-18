@@ -1,25 +1,32 @@
-const express = require('express');
-const hotelsRouter = express.Router();
-const getAllHotels = require('../application/hotel').getAllHotels;
-const getHotelById = require('../application/hotel').getHotelById;
-const createHotel = require('../application/hotel').createHotel;
-const updateHotel = require('../application/hotel').updateHotel;
-const patchHotel = require('../application/hotel').patchHotel;
-const deleteHotel = require('../application/hotel').deleteHotel;
+const express = require("express");
+const {
+  getAllHotels,
+  createHotel,
+  getHotelById,
+  updateHotel,
+  patchHotel,
+  deleteHotel,
+} = require("../application/hotel.js");
+const isAuthenticated = require("./middleware/authentication-middleware.js");
 
+const hotelRoute = express.Router();
 
+const preMiddleware = (req, res, next) => {
+  console.log(req.method, req.url);
+  next();
+};
 
-
-hotelsRouter.route('/')
+hotelRoute
+  .route("/")
   .get(getAllHotels)
   .post(createHotel);
 
-
-hotelsRouter.route('/:id')
-  .get(getHotelById)
+hotelRoute
+  .route("/:_id")
+  .get(isAuthenticated, getHotelById)
   .put(updateHotel)
   .patch(patchHotel)
   .delete(deleteHotel);
 
 
-module.exports = hotelsRouter;
+module.exports = hotelRoute;
