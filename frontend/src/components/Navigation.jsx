@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
-// import { SignedIn, SignedOut, UserButton, useUser } from "@clerk/clerk-react";
-import { Menu, Globe, X } from "lucide-react";
-// import { Link } from "react-router";
-import { useState, useRef, useEffect } from "react";
+import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
+import { Globe, Menu, X } from "lucide-react";
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import { Link } from "react-router";
 
 function Navigation() {
   //   const { user } = useUser();
@@ -44,16 +45,19 @@ function Navigation() {
   //     };
   //   }, [isMenuOpen]);
 
+  // const count = useSelector((state) => state.counter);
+
   return (
     <nav className="z-50 bg-black/90 backdrop-blur-md flex items-center justify-between px-4 sm:px-6 text-white py-3 rounded-full mx-4 my-3 relative">
       <div className="flex items-center space-x-8">
-        <a href="/" className="text-xl font-bold">
+        <Link to="/" className="text-xl font-bold">
           Horizone
-        </a>
+        </Link>
         <div className="hidden md:flex space-x-6">
-          <a href={`/`} className="transition-colors text-sm">
+          <Link to={`/`} className="transition-colors text-sm">
             Home
-          </a>
+          </Link>
+          {/* <p>{count}</p> */}
 
           {/* {user?.publicMetadata?.role === "admin" && (
             <a href={`/hotels/create`} className="transition-colors text-sm">
@@ -68,7 +72,7 @@ function Navigation() {
           <Globe className="h-4 w-4 mr-2" />
           EN
         </Button>
-        {/* <SignedOut>
+        <SignedOut>
           <Button
             variant="ghost"
             size="sm"
@@ -84,23 +88,23 @@ function Navigation() {
           >
             <Link to="/sign-up">Sign Up</Link>
           </Button>
-        </SignedOut> */}
-        <Button
+        </SignedOut>
+        {/* <Button
           variant="ghost"
           size="sm"
           asChild
           className="text-xs hidden md:flex"
         >
-          <a href="/sign-in">Log In</a>
+          <Link to="/sign-in">Log In</Link>
         </Button>
         <Button
           size="sm"
           asChild
           className="bg-white text-black hover:bg-gray-200 text-xs hidden md:flex"
         >
-          <a href="/sign-up">Sign Up</a>
-        </Button>
-        {/* <SignedIn>
+          <Link to="/sign-up">Sign Up</Link>
+        </Button> */}
+        <SignedIn>
           <UserButton />
           <Button
             size="sm"
@@ -109,7 +113,7 @@ function Navigation() {
           >
             <Link to="/account">My Account</Link>
           </Button>
-        </SignedIn> */}
+        </SignedIn>
 
         {/* Mobile Menu Button */}
         <div className="relative md:hidden">
