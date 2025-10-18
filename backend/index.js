@@ -16,10 +16,7 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
     : [
         process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null,
         'http://localhost:5173',
-        'http://localhost:3000',
-        'http://localhost:8000',
-        
-        
+        'http://localhost:3000'
     ].filter(Boolean);
 
 app.use(cors({
@@ -56,6 +53,14 @@ app.get('/api/health', (req, res) => {
 // Global error handler
 app.use(globalErrorHandlingMiddleware);
 
+// For local development
+if (process.env.NODE_ENV !== 'production') {
+    const PORT = process.env.PORT || 8000;
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
+}
+
 // Export for Vercel serverless
 module.exports = app;
-module.exports.handler = serverless(app);
+module.exports.default = serverless(app);
