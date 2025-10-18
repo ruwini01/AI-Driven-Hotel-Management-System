@@ -1,55 +1,29 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-// const getAllHotels = async () => {
-//   try {
-//     const res = await fetch("http://localhost:8000/api/hotels", {
-//       method: "GET",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//     });
-//     if (!res.ok) {
-//       throw new Error("Failed to fetch hotels");
-//     }
-//     const data = await res.json();
-//     return data;
-//   } catch (error) {
-//     throw new Error(error.message);
-//   }
-// };
-
-// const getAllLocations = async () => {
-//   try {
-//     const res = await fetch("http://localhost:8000/api/locations", {
-//       method: "GET",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//     });
-//     if (!res.ok) {
-//       throw new Error("Failed to fetch locations");
-//     }
-//     const data = await res.json();
-//     return data;
-//   } catch (error) {
-//     throw new Error(error.message);
-//   }
-// };
-
-// export { getAllHotels, getAllLocations };
+// Dynamic base URL - works for both development and production
+const getBaseUrl = () => {
+  // In production (Vercel), use relative URL since frontend and backend are on same domain
+  if (import.meta.env.PROD) {
+    return "/api/";
+  }
+  // In development, use localhost backend
+  return import.meta.env.VITE_API_URL || "http://localhost:8000/api/";
+};
 
 // Define a service using a base URL and expected endpoints
 export const api = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8000/api/",
+    baseUrl: getBaseUrl(),
     prepareHeaders: async (headers) => {
       return new Promise((resolve) => {
         async function checkToken() {
           const clerk = window.Clerk;
           if (clerk) {
             const token = await clerk.session?.getToken();
-            headers.set("Authorization", `Bearer ${token}`);
+            if (token) {
+              headers.set("Authorization", `Bearer ${token}`);
+            }
             resolve(headers);
           } else {
             setTimeout(checkToken, 500);
@@ -59,12 +33,15 @@ export const api = createApi({
       });
     },
   }),
+  tagTypes: ['Hotels', 'Locations'], // Add cache tags for better cache management
   endpoints: (build) => ({
     getAllHotels: build.query({
       query: () => "hotels",
+      providesTags: ['Hotels'],
     }),
     getHotelById: build.query({
       query: (id) => `hotels/${id}`,
+      providesTags: (result, error, id) => [{ type: 'Hotels', id }],
     }),
     addLocation: build.mutation({
       query: (location) => ({
@@ -74,9 +51,11 @@ export const api = createApi({
           name: location.name,
         },
       }),
+      invalidatesTags: ['Locations'], // Refresh locations after adding
     }),
     getAllLocations: build.query({
       query: () => "locations",
+      providesTags: ['Locations'],
     }),
   }),
 });

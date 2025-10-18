@@ -1,39 +1,61 @@
 const express = require('express');
-const connectDB = require('./src/infrastructure/db');
 const cors = require('cors');
+const serverless = require('serverless-http');
+const connectDB = require('./src/infrastructure/db');
 const globalErrorHandlingMiddleware = require('./src/api/middleware/global-error-handling-middleware');
-
 const { clerkMiddleware } = require('@clerk/express');
 
-//Connect to database
+// Connect to database
 connectDB();
 
 const app = express();
-const PORT =  8000;
 
-//Convert http payloads to json objects
-app.use(express.json());
+// Dynamic CORS configuration - allows same domain
+const allowedOrigins = process.env.ALLOWED_ORIGINS 
+    ? process.env.ALLOWED_ORIGINS.split(',')
+    : [
+        process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null,
+        'http://localhost:5173',
+        'http://localhost:3000',
+        'http://localhost:8000',
+        
+        
+    ].filter(Boolean);
 
-//Enable CORS for all routes
 app.use(cors({
-    origin: 'http://localhost:5173' 
-}
-));
+    origin: function(origin, callback) {
+        // Allow requests with no origin (same domain, mobile apps, Postman, etc.)
+        if (!origin) return callback(null, true);
+        
+        if (allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true
+}));
 
+app.use(express.json());
 app.use(clerkMiddleware());
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-})
-
-
+// Routes
 const hotelRoute = require('./src/api/hotel');
-const reviewRoute = require("./src/api/review");
-const locationRoute = require("./src/api/location");
+const reviewRoute = require('./src/api/review');
+const locationRoute = require('./src/api/location');
 
 app.use('/api/hotels', hotelRoute);
-app.use("/api/reviews", reviewRoute);
-app.use("/api/locations", locationRoute);
+app.use('/api/reviews', reviewRoute);
+app.use('/api/locations', locationRoute);
 
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+    res.status(200).json({ status: 'ok', message: 'Server is running' });
+});
 
-app.use(globalErrorHandlingMiddleware)
+// Global error handler
+app.use(globalErrorHandlingMiddleware);
+
+// Export for Vercel serverless
+module.exports = app;
+module.exports.handler = serverless(app);
