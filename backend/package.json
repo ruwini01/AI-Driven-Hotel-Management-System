@@ -2,12 +2,14 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "type": "commonjs",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js",
-    "seed": "node src/seed.js"
+    "dev": "nodemon --exec ts-node index.ts",
+    "seed": "ts-node src/seed.ts",
+    "start": "ts-node index.ts",
+    "build": "tsc",
+    "start:prod": "node dist/index.js"
   },
   "author": "",
   "license": "ISC",
@@ -20,5 +22,12 @@
     "mongoose": "^8.19.0",
     "nodemon": "^3.1.10",
     "serverless-http": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.8.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
   }
 }

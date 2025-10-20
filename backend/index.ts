@@ -1,9 +1,9 @@
-const express = require('express');
-const cors = require('cors');
-const serverless = require('serverless-http');
-const connectDB = require('./src/infrastructure/db');
-const globalErrorHandlingMiddleware = require('./src/api/middleware/global-error-handling-middleware');
-const { clerkMiddleware } = require('@clerk/express');
+import express, { Request, Response, NextFunction } from 'express';
+import cors from 'cors';
+import serverless from 'serverless-http';
+import connectDB from './src/infrastructure/db';
+import globalErrorHandlingMiddleware from './src/api/middleware/global-error-handling-middleware';
+import { clerkMiddleware } from '@clerk/express';
 
 // Connect to database
 connectDB();
@@ -11,16 +11,16 @@ connectDB();
 const app = express();
 
 // Dynamic CORS configuration - allows same domain
-const allowedOrigins = process.env.ALLOWED_ORIGINS 
+const allowedOrigins: string[] = process.env.ALLOWED_ORIGINS 
     ? process.env.ALLOWED_ORIGINS.split(',')
     : [
         process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null,
         'http://localhost:5173',
         'http://localhost:3000'
-    ].filter(Boolean);
+    ].filter((origin): origin is string => Boolean(origin));
 
 app.use(cors({
-    origin: function(origin, callback) {
+    origin: function(origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
         // Allow requests with no origin (same domain, mobile apps, Postman, etc.)
         if (!origin) return callback(null, true);
         
@@ -37,16 +37,16 @@ app.use(express.json());
 app.use(clerkMiddleware());
 
 // Routes
-const hotelRoute = require('./src/api/hotel');
-const reviewRoute = require('./src/api/review');
-const locationRoute = require('./src/api/location');
+import hotelRoute from './src/api/hotel';
+import reviewRoute from './src/api/review';
+import locationRoute from './src/api/location';
 
 app.use('/api/hotels', hotelRoute);
 app.use('/api/reviews', reviewRoute);
 app.use('/api/locations', locationRoute);
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
+app.get('/api/health', (req: Request, res: Response) => {
     res.status(200).json({ status: 'ok', message: 'Server is running' });
 });
 
@@ -62,5 +62,5 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // Export for Vercel serverless
-module.exports = app;
-module.exports.default = serverless(app);
+export default serverless(app);
+export { app };
