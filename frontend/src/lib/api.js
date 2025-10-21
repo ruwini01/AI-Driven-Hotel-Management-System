@@ -1,31 +1,55 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-// Dynamic base URL
-const getBaseUrl = () => {
-  // Will use backend URL from environment variable (we'll set this later)
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  
-  if (backendUrl) {
-    return backendUrl;
-  }
-  
-  // For now, use localhost backend during development
-  return "http://localhost:8000/api/";
-};
+// const getAllHotels = async () => {
+//   try {
+//     const res = await fetch("http://localhost:8000/api/hotels", {
+//       method: "GET",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//     });
+//     if (!res.ok) {
+//       throw new Error("Failed to fetch hotels");
+//     }
+//     const data = await res.json();
+//     return data;
+//   } catch (error) {
+//     throw new Error(error.message);
+//   }
+// };
 
+// const getAllLocations = async () => {
+//   try {
+//     const res = await fetch("http://localhost:8000/api/locations", {
+//       method: "GET",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//     });
+//     if (!res.ok) {
+//       throw new Error("Failed to fetch locations");
+//     }
+//     const data = await res.json();
+//     return data;
+//   } catch (error) {
+//     throw new Error(error.message);
+//   }
+// };
+
+// export { getAllHotels, getAllLocations };
+
+// Define a service using a base URL and expected endpoints
 export const api = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    baseUrl: getBaseUrl(),
+    baseUrl: "http://localhost:8000/api/",
     prepareHeaders: async (headers) => {
       return new Promise((resolve) => {
         async function checkToken() {
           const clerk = window.Clerk;
           if (clerk) {
             const token = await clerk.session?.getToken();
-            if (token) {
-              headers.set("Authorization", `Bearer ${token}`);
-            }
+            headers.set("Authorization", `Bearer ${token}`);
             resolve(headers);
           } else {
             setTimeout(checkToken, 500);
@@ -35,15 +59,19 @@ export const api = createApi({
       });
     },
   }),
-  tagTypes: ['Hotels', 'Locations'],
   endpoints: (build) => ({
     getAllHotels: build.query({
       query: () => "hotels",
-      providesTags: ['Hotels'],
     }),
     getHotelById: build.query({
       query: (id) => `hotels/${id}`,
-      providesTags: (result, error, id) => [{ type: 'Hotels', id }],
+    }),
+    createHotel: build.mutation({
+      query: (hotel) => ({
+        url: "hotels",
+        method: "POST",
+        body: hotel,
+      }),
     }),
     addLocation: build.mutation({
       query: (location) => ({
@@ -53,18 +81,27 @@ export const api = createApi({
           name: location.name,
         },
       }),
-      invalidatesTags: ['Locations'],
+    }),
+    addReview: build.mutation({
+      query: (review) => ({
+        url: "reviews",
+        method: "POST",
+        body: review,
+      }),
     }),
     getAllLocations: build.query({
       query: () => "locations",
-      providesTags: ['Locations'],
     }),
   }),
 });
 
+// Export hooks for usage in functional components, which are
+// auto-generated based on the defined endpoints
 export const {
   useGetAllHotelsQuery,
   useGetHotelByIdQuery,
+  useCreateHotelMutation,
   useAddLocationMutation,
   useGetAllLocationsQuery,
+  useAddReviewMutation,
 } = api;
